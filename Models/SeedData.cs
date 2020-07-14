@@ -35,6 +35,13 @@ namespace SportsStore.Models
                     },
                     new Product
                     {
+                        Name = "Soccer Ball",
+                        Description = "FIFA - approved size and weight",
+                        Category = "Football",
+                        Price = 19.50m
+                    },
+                    new Product
+                    {
                         Name = "Corner Flags",
                         Description = "Give your playing field a proffesional touch",
                         Category = "Football",

@@ -15,15 +15,17 @@ namespace SportsStore
 {
     public class Startup
     {
-        public IConfiguration Configuration { get; }
+        public IConfiguration Configuration { get; set; }
         public Startup(IConfiguration configuration) => Configuration = configuration;
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMvc();
+
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(
                 Configuration["Data:SportsStoreProducts:ConnectionString"]));
-            services.AddTransient<IProductRepository, EFProductRepository>();
-            services.AddMvc();
+
+            services.AddScoped<IProductRepository, EFProductRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -34,11 +36,29 @@ namespace SportsStore
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseStatusCodePages();
             app.UseStaticFiles();
+
             app.UseRouting();
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapControllerRoute("catpage",
+                    "{category}/Page{ProductPage:int}",
+                    new { Controller = "Product", action = "List" });
+
+                endpoints.MapControllerRoute("page",
+                    "Page{ProductPage:int}",
+                    new { Controller = "Product", action = "List", productPage=1 });
+
+                endpoints.MapControllerRoute("category",
+                    "{category}",
+                    new { Controller = "Product", action = "List", productPage = 1 });
+
+                endpoints.MapControllerRoute("pagination",
+                    "Products/Page{productPage}",
+                    new { Controller = "Product", action = "List" });
+
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Product}/{action=List}/{id?}");
